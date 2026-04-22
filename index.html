@@ -1,0 +1,3447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Builder — مولّد البرومبتات للهوية البصرية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --ink: #0A0A0A;
+  --cream: #F2EDE4;
+  --paper: #FAF6EE;
+  --lime: #D4FF3D;
+  --bronze: #B8956A;
+  --gray: #5F5E5A;
+  --soft-gray: #D3D1C7;
+  --red: #A32D2D;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Tajawal', 'Inter', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(10,10,10,0.08) 1px, transparent 0);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ===== HEADER ===== */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--ink);
+}
+
+.logo-lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-mark {
+  width: 44px;
+  height: 44px;
+  background: var(--ink);
+  position: relative;
+  flex-shrink: 0;
+}
+.logo-mark::before,
+.logo-mark::after {
+  content: '';
+  position: absolute;
+  background: var(--lime);
+}
+.logo-mark::before {
+  width: 26px; height: 8px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+.logo-mark::after {
+  width: 8px; height: 26px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+.logo-mark span {
+  position: absolute;
+  width: 8px; height: 8px;
+  background: var(--ink);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.wordmark {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 24px;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.meta {
+  text-align: left;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--gray);
+  line-height: 1.6;
+}
+
+/* ===== HERO ===== */
+.hero {
+  padding: 2rem 0 3rem;
+  position: relative;
+}
+
+.hero-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--bronze);
+  margin-bottom: 1rem;
+}
+
+.hero-title {
+  font-family: 'Archivo Black', 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -2px;
+  margin-bottom: 1.5rem;
+}
+
+.hero-title .em {
+  background: var(--lime);
+  padding: 0 12px;
+  display: inline-block;
+  position: relative;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--gray);
+  max-width: 640px;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/* ===== PROGRESS ===== */
+.progress-wrap {
+  margin-bottom: 3rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--ink);
+  color: var(--cream);
+  position: relative;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+.progress-label .pct {
+  color: var(--lime);
+  font-weight: 700;
+}
+
+.progress-bar {
+  height: 4px;
+  background: rgba(242,237,228,0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: var(--lime);
+  transition: width 0.5s cubic-bezier(.2,.8,.2,1);
+}
+
+.progress-steps {
+  display: flex;
+  gap: 4px;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.progress-steps .step {
+  flex: 1;
+  min-width: 40px;
+  height: 2px;
+  background: rgba(242,237,228,0.2);
+  transition: background 0.3s;
+}
+.progress-steps .step.done {
+  background: var(--lime);
+}
+.progress-steps .step.current {
+  background: var(--bronze);
+}
+
+/* ===== STEP CARDS ===== */
+.step-card {
+  background: var(--cream);
+  border: 1px solid var(--ink);
+  padding: 2.5rem 2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: none;
+  animation: slideIn 0.4s cubic-bezier(.2,.8,.2,1);
+}
+.step-card.active { display: block; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-head {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed rgba(10,10,10,0.2);
+}
+
+.step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--bronze);
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.step-title {
+  font-family: 'Archivo Black', 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  flex: 1;
+}
+
+.step-desc {
+  color: var(--gray);
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/* ===== FORM ELEMENTS ===== */
+.field {
+  margin-bottom: 1.5rem;
+}
+
+.field-label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  color: var(--bronze);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.field-hint {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin-bottom: 0.75rem;
+  font-weight: 300;
+}
+
+.input, .textarea, .select {
+  width: 100%;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  padding: 0.9rem 1rem;
+  font-family: 'Tajawal', 'Inter', sans-serif;
+  font-size: 1rem;
+  color: var(--ink);
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.input:focus, .textarea:focus, .select:focus {
+  outline: none;
+  background: #fff;
+  box-shadow: 4px 4px 0 var(--ink);
+  transform: translate(-2px, -2px);
+}
+
+.textarea {
+  min-height: 90px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* ===== CHIP CHOICES ===== */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 0.7rem 1.1rem;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  cursor: pointer;
+  font-family: 'Tajawal', 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.chip:hover {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.chip.active {
+  background: var(--ink);
+  color: var(--lime);
+  font-weight: 700;
+}
+
+/* ===== COLOR WHEEL ===== */
+.wheel-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 760px) {
+  .wheel-section { grid-template-columns: 1fr; gap: 1.5rem; }
+}
+
+.wheel-wrap {
+  position: relative;
+  aspect-ratio: 1;
+  max-width: 340px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.wheel-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: crosshair;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.wheel-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 26%;
+  height: 26%;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--gray);
+  pointer-events: none;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
+}
+
+.wheel-marker {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-shadow: 0 0 0 2px var(--paper);
+  transition: background 0.1s, top 0.3s, left 0.3s;
+}
+.wheel-marker.secondary {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+  opacity: 0.85;
+}
+
+.lightness-row {
+  margin-top: 1rem;
+}
+
+.lightness-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--gray);
+}
+
+.lightness-slider {
+  width: 100%;
+  height: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: linear-gradient(to right, #000, #fff);
+  border: 1px solid var(--ink);
+  outline: none;
+  cursor: pointer;
+}
+.lightness-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 26px;
+  background: var(--lime);
+  border: 2px solid var(--ink);
+  cursor: pointer;
+}
+.lightness-slider::-moz-range-thumb {
+  width: 14px;
+  height: 26px;
+  background: var(--lime);
+  border: 2px solid var(--ink);
+  cursor: pointer;
+  border-radius: 0;
+}
+
+/* ===== HARMONY PICKER ===== */
+.harmony-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.harmony-head {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--bronze);
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.harmony-chip {
+  padding: 0.75rem 1rem;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.harmony-chip:hover {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.harmony-chip.active {
+  background: var(--ink);
+  color: var(--cream);
+  box-shadow: 4px 4px 0 var(--lime), 4px 4px 0 1px var(--ink);
+  transform: translate(-2px, -2px);
+}
+
+.harmony-chip-swatches {
+  display: flex;
+  gap: 2px;
+  width: 56px;
+  height: 20px;
+  border: 1px solid rgba(10,10,10,0.2);
+}
+.harmony-chip.active .harmony-chip-swatches {
+  border-color: rgba(242,237,228,0.3);
+}
+.harmony-chip-swatches div {
+  flex: 1;
+}
+
+.harmony-chip-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.harmony-chip-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.harmony-chip-desc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  opacity: 0.7;
+}
+
+.harmony-chip-arrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  opacity: 0.5;
+}
+.harmony-chip.active .harmony-chip-arrow { opacity: 1; color: var(--lime); }
+
+/* ===== FINAL PALETTE DISPLAY ===== */
+.final-palette {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: var(--ink);
+  color: var(--cream);
+  position: relative;
+}
+
+.final-palette-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+.final-palette-head .bronze { color: var(--bronze); }
+.final-palette-head .lime { color: var(--lime); }
+
+.final-swatches {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.final-swatch {
+  position: relative;
+  aspect-ratio: 1.6;
+  border: 1px solid rgba(242,237,228,0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0.5rem;
+  overflow: hidden;
+}
+
+.final-swatch-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  opacity: 0.8;
+  margin-bottom: 2px;
+}
+
+.final-swatch-hex {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* ===== CUSTOM OVERRIDE ===== */
+.custom-toggle {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed rgba(10,10,10,0.3);
+}
+
+.custom-toggle-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--bronze);
+  padding: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.custom-toggle-btn:hover { color: var(--ink); }
+
+.custom-toggle-btn .chev {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+.custom-toggle-btn.open .chev { transform: rotate(90deg); }
+
+.custom-color-panel {
+  display: none;
+  margin-top: 1rem;
+}
+.custom-color-panel.open { display: block; }
+
+.custom-color-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.color-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.color-input-group label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--gray);
+}
+
+.color-input-wrap {
+  display: flex;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+}
+
+.color-input-wrap input[type="color"] {
+  width: 42px;
+  border: none;
+  background: transparent;
+  padding: 2px;
+  cursor: pointer;
+  border-left: 1px solid var(--ink);
+}
+
+.color-input-wrap input[type="text"] {
+  flex: 1;
+  border: none;
+  padding: 0.6rem 0.8rem;
+  background: transparent;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.color-input-wrap input:focus {
+  outline: none;
+}
+
+@media (max-width: 520px) {
+  .custom-color-row { grid-template-columns: 1fr; }
+}
+
+/* ===== PRODUCTS CHECKBOX GRID ===== */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.product-card {
+  padding: 1.25rem 0.75rem;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  user-select: none;
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.product-card.active {
+  background: var(--ink);
+  color: var(--cream);
+  box-shadow: 4px 4px 0 var(--lime);
+  transform: translate(-2px, -2px);
+}
+
+.product-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.product-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.product-name-en {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  opacity: 0.7;
+}
+
+.product-card.active .check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 16px;
+  height: 16px;
+  background: var(--lime);
+  color: var(--ink);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 10px;
+}
+
+.product-card:not(.active) .check { display: none; }
+
+/* ===== BUTTONS ===== */
+.btn-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed rgba(10,10,10,0.2);
+}
+
+.btn {
+  padding: 0.9rem 1.8rem;
+  font-family: 'Archivo Black', 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border: 1px solid var(--ink);
+  transition: all 0.15s;
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 2px;
+  font-size: 11px;
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--lime);
+}
+.btn-primary:hover {
+  background: var(--lime);
+  color: var(--ink);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+}
+.btn-secondary:hover {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ===== RESULTS ===== */
+.results-wrap {
+  display: none;
+}
+.results-wrap.active { display: block; }
+
+.brand-preview {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 3rem 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-preview::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 160px;
+  height: 160px;
+  background: var(--lime);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  opacity: 0.3;
+}
+
+.preview-name {
+  font-family: 'Archivo Black', 'Tajawal', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: -1px;
+  margin-bottom: 0.5rem;
+}
+
+.preview-tagline {
+  font-size: 1.1rem;
+  color: var(--lime);
+  font-style: italic;
+  margin-bottom: 1.5rem;
+  font-weight: 300;
+}
+
+.preview-swatches {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 2rem;
+}
+
+.preview-swatch {
+  width: 56px;
+  height: 56px;
+  border: 1px solid rgba(242,237,228,0.3);
+  position: relative;
+}
+
+.preview-swatch .hex {
+  position: absolute;
+  bottom: -22px;
+  left: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--cream);
+  opacity: 0.6;
+  letter-spacing: 1px;
+}
+
+.preview-meta {
+  display: flex;
+  gap: 2rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--cream);
+  opacity: 0.7;
+  letter-spacing: 2px;
+  flex-wrap: wrap;
+  margin-top: 2.5rem;
+}
+
+.preview-meta .meta-item span:first-child { 
+  display: block;
+  color: var(--bronze);
+  margin-bottom: 4px;
+}
+
+/* ===== PROMPT CARDS ===== */
+.prompts-section {
+  margin-top: 2rem;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--ink);
+}
+
+.section-title {
+  font-family: 'Archivo Black', 'Tajawal', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: -0.5px;
+}
+
+.section-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--bronze);
+}
+
+.prompt-card {
+  background: var(--cream);
+  border: 1px solid var(--ink);
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+
+.prompt-header {
+  padding: 1rem 1.5rem;
+  background: var(--ink);
+  color: var(--cream);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.prompt-title-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.prompt-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--bronze);
+}
+
+.prompt-title {
+  font-family: 'Archivo Black', 'Tajawal', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: -0.3px;
+}
+
+.copy-btn {
+  padding: 0.5rem 1rem;
+  background: var(--lime);
+  color: var(--ink);
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.15s;
+}
+
+.copy-btn:hover {
+  background: var(--cream);
+}
+
+.copy-btn.copied {
+  background: var(--bronze);
+  color: var(--cream);
+}
+
+.prompt-body {
+  padding: 1.25rem 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  color: var(--ink);
+  direction: ltr;
+  text-align: left;
+}
+
+.prompt-notes {
+  padding: 1rem 1.5rem;
+  background: var(--paper);
+  border-top: 1px dashed rgba(10,10,10,0.2);
+  font-size: 0.85rem;
+  color: var(--gray);
+  line-height: 1.7;
+}
+.prompt-notes strong {
+  color: var(--bronze);
+  font-weight: 700;
+}
+
+/* ===== ACTION BAR ===== */
+.action-bar {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--ink);
+  flex-wrap: wrap;
+}
+
+/* ===== DOWNLOAD CARD ===== */
+.downloads-section {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 2rem;
+  margin-top: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.downloads-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(212,255,61,0.3);
+}
+
+.downloads-title {
+  font-family: 'Archivo Black', 'Tajawal', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: -0.5px;
+}
+
+.downloads-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--bronze);
+}
+
+.downloads-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.download-btn {
+  padding: 1rem 1.25rem;
+  background: transparent;
+  border: 1px solid var(--cream);
+  color: var(--cream);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: right;
+  font-family: 'Tajawal', 'Inter', sans-serif;
+}
+
+.download-btn:hover {
+  background: var(--lime);
+  color: var(--ink);
+  border-color: var(--lime);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--cream);
+}
+
+.download-btn-head {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  opacity: 0.7;
+}
+
+.download-btn-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+.download-btn-desc {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  font-weight: 300;
+  margin-top: 2px;
+}
+
+/* ===== TOOL LINKS ===== */
+.tools-section {
+  background: var(--cream);
+  border: 1px solid var(--ink);
+  padding: 1.75rem;
+  margin-top: 1.5rem;
+}
+
+.tools-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed rgba(10,10,10,0.3);
+}
+
+.tools-title {
+  font-family: 'Archivo Black', 'Tajawal', sans-serif;
+  font-size: 1.15rem;
+}
+
+.tools-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--bronze);
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.tool-link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.9rem 1rem;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  text-decoration: none;
+  color: var(--ink);
+  transition: all 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.tool-link::before {
+  content: '→';
+  position: absolute;
+  top: 0.75rem;
+  left: 0.9rem;
+  font-family: 'JetBrains Mono', monospace;
+  opacity: 0;
+  transition: all 0.15s;
+  font-size: 14px;
+}
+
+.tool-link:hover {
+  background: var(--ink);
+  color: var(--cream);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--lime);
+}
+
+.tool-link:hover::before {
+  opacity: 1;
+  color: var(--lime);
+}
+
+.tool-link-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+}
+
+.tool-link-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  opacity: 0.6;
+}
+
+/* ===== PROMPT BUTTON GROUP ===== */
+.prompt-actions {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.open-in-btn {
+  padding: 0.5rem 0.85rem;
+  background: transparent;
+  color: var(--cream);
+  border: 1px solid rgba(242,237,228,0.4);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.open-in-btn:hover {
+  background: var(--lime);
+  color: var(--ink);
+  border-color: var(--lime);
+}
+
+.open-in-btn .icon {
+  font-size: 10px;
+}
+
+/* ===== FOOTER ===== */
+.site-footer {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--ink);
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--gray);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* ===== WARNING BOX ===== */
+.warning-box {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+  border-right: 6px solid var(--lime);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+.warning-box strong {
+  color: var(--lime);
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 2px;
+  font-size: 10px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .app { padding: 1rem 1rem 3rem; }
+  .step-card { padding: 1.5rem 1.25rem; }
+  .hero { padding: 1rem 0 2rem; }
+  .custom-color-row { grid-template-columns: 1fr; }
+  .btn-row { flex-direction: column-reverse; }
+  .btn { width: 100%; }
+  .preview-meta { flex-direction: column; gap: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="logo-lockup">
+    <div class="logo-mark"><span></span></div>
+    <div class="wordmark">brand builder</div>
+  </div>
+  <div class="meta">
+    <div>// AI PROMPT GENERATOR</div>
+    <div>V1.0 · 2026</div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">// FROM BRIEF TO COMPLETE IDENTITY</div>
+  <h1 class="hero-title">
+    ابنِ <span class="em">هويتك</span><br>البصرية
+  </h1>
+  <p class="hero-subtitle">
+    أجب على الأسئلة خطوة بخطوة — وسنولّد لك برومبتات احترافية جاهزة للنسخ 
+    على أي أداة ذكاء اصطناعي (Nano Banana, Midjourney, ChatGPT).
+    لوغو، بطاقة، إعلان، بوستر، ومنتجات.
+  </p>
+</section>
+
+<!-- PROGRESS -->
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-label">
+    <span>PROGRESS</span>
+    <span class="pct" id="progressPct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-steps" id="progressSteps"></div>
+</div>
+
+<!-- FORM SECTION -->
+<div id="formSection">
+
+<!-- STEP 1: BRAND BASICS -->
+<div class="step-card active" data-step="0">
+  <div class="step-head">
+    <div class="step-num">01 / 06</div>
+    <h2 class="step-title">أساسيات البراند</h2>
+  </div>
+  <p class="step-desc">نبدأ من الأساس — الاسم والتاغلاين وشو الشركة بتعمل.</p>
+
+  <div class="field">
+    <label class="field-label">BRAND NAME — اسم البراند</label>
+    <p class="field-hint">الاسم بالإنجليزية كما سيظهر في الشعار (كلمة واحدة أو اثنتين).</p>
+    <input type="text" class="input" id="brandName" placeholder="splice" autocomplete="off">
+  </div>
+
+  <div class="field">
+    <label class="field-label">TAGLINE — الشعار الفرعي</label>
+    <p class="field-hint">جملة قصيرة تلخّص ما تقدّمه (بالإنجليزية، مثالياً 3-7 كلمات).</p>
+    <input type="text" class="input" id="tagline" placeholder="Websites that don't look like websites" autocomplete="off">
+  </div>
+
+  <div class="field">
+    <label class="field-label">WHAT YOU DO — ماذا تقدّم الشركة؟</label>
+    <p class="field-hint">اكتب باختصار نوع الخدمة أو الصناعة.</p>
+    <input type="text" class="input" id="industry" placeholder="creative web development studio" autocomplete="off">
+  </div>
+
+  <div class="field">
+    <label class="field-label">TARGET AUDIENCE — الجمهور المستهدف</label>
+    <p class="field-hint">لمن تتوجه؟ هذا يحدد الشخصية البصرية للبراند.</p>
+    <div class="chips" id="audienceChips">
+      <div class="chip" data-value="startups and entrepreneurs">ستارت أب ورواد أعمال</div>
+      <div class="chip" data-value="large corporations">شركات كبيرة</div>
+      <div class="chip" data-value="luxury brands">علامات فاخرة</div>
+      <div class="chip" data-value="creative agencies">مبدعين ووكالات</div>
+      <div class="chip" data-value="everyday consumers">جمهور عام</div>
+      <div class="chip" data-value="tech professionals">جمهور تقني</div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <div></div>
+    <button class="btn btn-primary" onclick="nextStep()">NEXT · التالي →</button>
+  </div>
+</div>
+
+<!-- STEP 2: PERSONALITY -->
+<div class="step-card" data-step="1">
+  <div class="step-head">
+    <div class="step-num">02 / 06</div>
+    <h2 class="step-title">شخصية البراند</h2>
+  </div>
+  <p class="step-desc">اختر الصفات التي تعكس روح شركتك. اختر 2-4 صفات.</p>
+
+  <div class="field">
+    <label class="field-label">PERSONALITY — الشخصية</label>
+    <div class="chips" id="personalityChips">
+      <div class="chip" data-value="bold">جريئة</div>
+      <div class="chip" data-value="minimal">بسيطة</div>
+      <div class="chip" data-value="playful">مرحة</div>
+      <div class="chip" data-value="luxurious">فاخرة</div>
+      <div class="chip" data-value="warm">دافئة</div>
+      <div class="chip" data-value="rebellious">متمردة</div>
+      <div class="chip" data-value="calm">هادئة</div>
+      <div class="chip" data-value="sophisticated">راقية</div>
+      <div class="chip" data-value="friendly">ودودة</div>
+      <div class="chip" data-value="serious">جادة</div>
+      <div class="chip" data-value="futuristic">مستقبلية</div>
+      <div class="chip" data-value="organic">عضوية</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">STYLE DIRECTION — الاتجاه البصري</label>
+    <p class="field-hint">المرجع البصري الذي تريد أن يشبهه البراند.</p>
+    <div class="chips" id="styleChips">
+      <div class="chip" data-value="editorial magazine style, like Wired or Kinfolk">تحريري مجلاتي</div>
+      <div class="chip" data-value="brutalist bold design, high contrast">برتوتالي جريء</div>
+      <div class="chip" data-value="minimal swiss design, geometric precision">سويسري هندسي</div>
+      <div class="chip" data-value="retro vintage aesthetic, 70s/80s inspired">ريترو</div>
+      <div class="chip" data-value="hand-drawn organic feel">يدوي عضوي</div>
+      <div class="chip" data-value="tech startup modern, clean sans-serif">ستارت أب حديث</div>
+      <div class="chip" data-value="luxury editorial, refined typography">لاكجري راقي</div>
+      <div class="chip" data-value="y2k maximalist, digital nostalgia">Y2K رقمي</div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="prevStep()">← BACK</button>
+    <button class="btn btn-primary" onclick="nextStep()">NEXT →</button>
+  </div>
+</div>
+
+<!-- STEP 3: COLORS -->
+<div class="step-card" data-step="2">
+  <div class="step-head">
+    <div class="step-num">03 / 06</div>
+    <h2 class="step-title">لوحة الألوان</h2>
+  </div>
+  <p class="step-desc">اختر لوناً من العجلة، ثم اختر نظام الانسجام — وسنحسب الألوان المتمّمة تلقائياً بناءً على نظرية الألوان.</p>
+
+  <div class="wheel-section">
+    <!-- LEFT: Color Wheel -->
+    <div>
+      <div class="wheel-wrap">
+        <svg class="wheel-svg" id="wheelSvg" viewBox="0 0 300 300">
+          <defs id="wheelDefs"></defs>
+          <g id="wheelSlices"></g>
+        </svg>
+        <div class="wheel-center">
+          <div id="wheelHex">SELECT</div>
+          <div style="font-size: 8px; opacity: 0.6;">COLOR</div>
+        </div>
+        <div class="wheel-marker" id="wheelMarkerPrimary" style="display:none;"></div>
+        <div class="wheel-marker secondary" id="wheelMarkerAccent" style="display:none;"></div>
+      </div>
+
+      <div class="lightness-row">
+        <div class="lightness-label">
+          <span>LIGHTNESS</span>
+          <span id="lightnessVal">50%</span>
+        </div>
+        <input type="range" class="lightness-slider" id="lightnessSlider" min="15" max="85" value="50">
+      </div>
+    </div>
+
+    <!-- RIGHT: Harmony Chooser -->
+    <div class="harmony-section">
+      <div class="harmony-head">HARMONY — نظام الانسجام</div>
+
+      <div class="harmony-chip" data-harmony="complementary">
+        <div class="harmony-chip-swatches" data-preview="complementary"></div>
+        <div class="harmony-chip-label">
+          <span class="harmony-chip-name">تكاملي (Complementary)</span>
+          <span class="harmony-chip-desc">OPPOSITE · تباين قوي</span>
+        </div>
+        <span class="harmony-chip-arrow">→</span>
+      </div>
+
+      <div class="harmony-chip active" data-harmony="analogous">
+        <div class="harmony-chip-swatches" data-preview="analogous"></div>
+        <div class="harmony-chip-label">
+          <span class="harmony-chip-name">متناظر (Analogous)</span>
+          <span class="harmony-chip-desc">NEIGHBORS · متناغم ومريح</span>
+        </div>
+        <span class="harmony-chip-arrow">→</span>
+      </div>
+
+      <div class="harmony-chip" data-harmony="triadic">
+        <div class="harmony-chip-swatches" data-preview="triadic"></div>
+        <div class="harmony-chip-label">
+          <span class="harmony-chip-name">ثلاثي (Triadic)</span>
+          <span class="harmony-chip-desc">120° APART · حيوي ومتوازن</span>
+        </div>
+        <span class="harmony-chip-arrow">→</span>
+      </div>
+
+      <div class="harmony-chip" data-harmony="split">
+        <div class="harmony-chip-swatches" data-preview="split"></div>
+        <div class="harmony-chip-label">
+          <span class="harmony-chip-name">تكاملي مقسوم (Split)</span>
+          <span class="harmony-chip-desc">SOFT CONTRAST · جريء لكن لطيف</span>
+        </div>
+        <span class="harmony-chip-arrow">→</span>
+      </div>
+
+      <div class="harmony-chip" data-harmony="monochromatic">
+        <div class="harmony-chip-swatches" data-preview="monochromatic"></div>
+        <div class="harmony-chip-label">
+          <span class="harmony-chip-name">أحادي (Monochromatic)</span>
+          <span class="harmony-chip-desc">SAME HUE · راقٍ ومحترف</span>
+        </div>
+        <span class="harmony-chip-arrow">→</span>
+      </div>
+
+      <div class="harmony-chip" data-harmony="tetradic">
+        <div class="harmony-chip-swatches" data-preview="tetradic"></div>
+        <div class="harmony-chip-label">
+          <span class="harmony-chip-name">رباعي (Tetradic)</span>
+          <span class="harmony-chip-desc">4 COLORS · غنية ومركّبة</span>
+        </div>
+        <span class="harmony-chip-arrow">→</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINAL PALETTE PREVIEW -->
+  <div class="final-palette">
+    <div class="final-palette-head">
+      <span class="bronze">// YOUR PALETTE</span>
+      <span class="lime" id="harmonyLabel">ANALOGOUS HARMONY</span>
+    </div>
+    <div class="final-swatches" id="finalSwatches"></div>
+  </div>
+
+  <!-- CUSTOM OVERRIDE TOGGLE -->
+  <div class="custom-toggle">
+    <button class="custom-toggle-btn" id="customToggleBtn" type="button">
+      <span class="chev">▸</span>
+      <span>OVERRIDE WITH CUSTOM COLORS · ألوان مخصصة</span>
+    </button>
+    <div class="custom-color-panel" id="customPanel">
+      <p class="field-hint">اضبط ألوانك الخاصة يدوياً — أي تعديل هنا يستبدل الألوان المحسوبة من العجلة.</p>
+      <div class="custom-color-row">
+        <div class="color-input-group">
+          <label>PRIMARY · أساسي</label>
+          <div class="color-input-wrap">
+            <input type="text" id="hexPrimary" value="#0A0A0A" maxlength="7">
+            <input type="color" id="colorPrimary" value="#0A0A0A">
+          </div>
+        </div>
+        <div class="color-input-group">
+          <label>ACCENT · مميّز</label>
+          <div class="color-input-wrap">
+            <input type="text" id="hexAccent" value="#D4FF3D" maxlength="7">
+            <input type="color" id="colorAccent" value="#D4FF3D">
+          </div>
+        </div>
+        <div class="color-input-group">
+          <label>BACKGROUND · خلفية</label>
+          <div class="color-input-wrap">
+            <input type="text" id="hexBg" value="#F2EDE4" maxlength="7">
+            <input type="color" id="colorBg" value="#F2EDE4">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="prevStep()">← BACK</button>
+    <button class="btn btn-primary" onclick="nextStep()">NEXT →</button>
+  </div>
+</div>
+
+<!-- STEP 4: SYMBOL -->
+<div class="step-card" data-step="3">
+  <div class="step-head">
+    <div class="step-num">04 / 06</div>
+    <h2 class="step-title">الرمز البصري</h2>
+  </div>
+  <p class="step-desc">الشكل الذي سيظهر في الشعار ويتكرر في كل قطع البراند.</p>
+
+  <div class="field">
+    <label class="field-label">SYMBOL CONCEPT — مفهوم الرمز</label>
+    <div class="chips" id="symbolChips">
+      <div class="chip" data-value="geometric plus-shape with a cut at the intersection">علامة + مقطوعة</div>
+      <div class="chip" data-value="abstract circle with diagonal line through it">دائرة مع خط</div>
+      <div class="chip" data-value="minimal branching tree made of thin lines">شجرة متفرّعة</div>
+      <div class="chip" data-value="hexagonal geometric shape">شكل سداسي</div>
+      <div class="chip" data-value="interlocking triangles">مثلثات متداخلة</div>
+      <div class="chip" data-value="minimal spiral or wave">حلزون/موجة</div>
+      <div class="chip" data-value="monogram of the first letter">حرف مونوغرام</div>
+      <div class="chip" data-value="abstract organic blob shape">شكل عضوي</div>
+      <div class="chip" data-value="grid of small dots forming a pattern">شبكة نقاط</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">CUSTOM DESCRIPTION — أو صف رمزك بنفسك</label>
+    <p class="field-hint">اختياري — اكتب وصفك الخاص إذا ما أعجبتك الخيارات أعلاه.</p>
+    <textarea class="textarea" id="customSymbol" placeholder="مثال: abstract lightning bolt made of 3 triangles"></textarea>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="prevStep()">← BACK</button>
+    <button class="btn btn-primary" onclick="nextStep()">NEXT →</button>
+  </div>
+</div>
+
+<!-- STEP 5: TYPOGRAPHY -->
+<div class="step-card" data-step="4">
+  <div class="step-head">
+    <div class="step-num">05 / 06</div>
+    <h2 class="step-title">الطباعة والخطوط</h2>
+  </div>
+  <p class="step-desc">اختر أسلوب الخط الذي سيحمل شخصية البراند.</p>
+
+  <div class="field">
+    <label class="field-label">TYPOGRAPHY STYLE — أسلوب الخط</label>
+    <div class="chips" id="typoChips">
+      <div class="chip" data-value="ultra-bold sans-serif, tight letter-spacing, lowercase">ساندسريف عريض</div>
+      <div class="chip" data-value="elegant serif, refined, classical proportions">سيريف أنيق</div>
+      <div class="chip" data-value="minimal geometric sans-serif, wide letter-spacing">هندسي متباعد</div>
+      <div class="chip" data-value="monospace typewriter style">مونوسبيس آلة كاتبة</div>
+      <div class="chip" data-value="handwritten script, flowing">خط يدوي</div>
+      <div class="chip" data-value="condensed tall sans-serif">عريض طويل</div>
+      <div class="chip" data-value="rounded friendly sans-serif">مستدير ودود</div>
+      <div class="chip" data-value="display decorative font">عرض تزييني</div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="prevStep()">← BACK</button>
+    <button class="btn btn-primary" onclick="nextStep()">NEXT →</button>
+  </div>
+</div>
+
+<!-- STEP 6: PRODUCTS -->
+<div class="step-card" data-step="5">
+  <div class="step-head">
+    <div class="step-num">06 / 06</div>
+    <h2 class="step-title">المنتجات والمطبوعات</h2>
+  </div>
+  <p class="step-desc">اختر كل المنتجات التي تريد تطبيق الشعار عليها. سنولّد برومبت خاص لكل واحد.</p>
+
+  <div class="field">
+    <div class="products-grid" id="productsGrid"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="prevStep()">← BACK</button>
+    <button class="btn btn-primary" onclick="generateBrand()">GENERATE · ولّد البراند ✦</button>
+  </div>
+</div>
+
+</div>
+
+<!-- RESULTS -->
+<div class="results-wrap" id="resultsSection">
+  <div class="brand-preview" id="brandPreview"></div>
+
+  <div class="warning-box">
+    <strong>// IMPORTANT</strong>
+    الذكاء الاصطناعي يعطيك 80% من الطريق. بعد التوليد، افتح الصورة في Figma أو Canva وعدّل الألوان والنسب يدوياً للوصول لنتيجة احترافية.
+    كل برومبت يولّد نتيجة مختلفة في كل محاولة — جرّب 5-10 مرات واختر الأفضل.
+  </div>
+
+  <div class="prompts-section">
+    <div class="section-head">
+      <h3 class="section-title">البرومبتات الجاهزة</h3>
+      <div class="section-count" id="promptCount"></div>
+    </div>
+    <div id="promptsContainer"></div>
+  </div>
+
+  <!-- DOWNLOADS SECTION -->
+  <div class="downloads-section">
+    <div class="downloads-head">
+      <h3 class="downloads-title">حمّل ملفات الهوية</h3>
+      <span class="downloads-tag">// 3 FORMATS</span>
+    </div>
+    <div class="downloads-grid">
+      <button class="download-btn" onclick="downloadPDF()">
+        <span class="download-btn-head">01 · PDF</span>
+        <span class="download-btn-label">Brand Guide</span>
+        <span class="download-btn-desc">دليل هوية احترافي كامل</span>
+      </button>
+      <button class="download-btn" onclick="downloadAll()">
+        <span class="download-btn-head">02 · TXT</span>
+        <span class="download-btn-label">Prompts Only</span>
+        <span class="download-btn-desc">البرومبتات كنص جاهز</span>
+      </button>
+      <button class="download-btn" onclick="downloadJSON()">
+        <span class="download-btn-head">03 · JSON</span>
+        <span class="download-btn-label">Brand Data</span>
+        <span class="download-btn-desc">بيانات البراند للأرشفة</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- TOOLS LINKS -->
+  <div class="tools-section">
+    <div class="tools-head">
+      <h3 class="tools-title">افتح أداة التوليد</h3>
+      <span class="tools-tag">// AI IMAGE GENERATORS</span>
+    </div>
+    <div class="tools-grid">
+      <a class="tool-link" href="https://gemini.google.com/app" target="_blank" rel="noopener">
+        <span class="tool-link-name">Gemini</span>
+        <span class="tool-link-meta">GOOGLE · FREE</span>
+      </a>
+      <a class="tool-link" href="https://chat.openai.com/" target="_blank" rel="noopener">
+        <span class="tool-link-name">ChatGPT</span>
+        <span class="tool-link-meta">OPENAI · DALL-E</span>
+      </a>
+      <a class="tool-link" href="https://www.midjourney.com/app" target="_blank" rel="noopener">
+        <span class="tool-link-name">Midjourney</span>
+        <span class="tool-link-meta">PREMIUM · BEST</span>
+      </a>
+      <a class="tool-link" href="https://leonardo.ai/" target="_blank" rel="noopener">
+        <span class="tool-link-name">Leonardo AI</span>
+        <span class="tool-link-meta">FREE CREDITS</span>
+      </a>
+      <a class="tool-link" href="https://www.ideogram.ai/" target="_blank" rel="noopener">
+        <span class="tool-link-name">Ideogram</span>
+        <span class="tool-link-meta">BEST FOR TEXT</span>
+      </a>
+      <a class="tool-link" href="https://www.figma.com/" target="_blank" rel="noopener">
+        <span class="tool-link-name">Figma</span>
+        <span class="tool-link-meta">REFINE · FREE</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-secondary" onclick="restart()">↺ START OVER · ابدأ من جديد</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div>BRAND BUILDER · V1.0</div>
+  <div>WORKS WITH · NANO BANANA · MIDJOURNEY · CHATGPT</div>
+</footer>
+
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  currentStep: 0,
+  brandName: '',
+  tagline: '',
+  industry: '',
+  audience: '',
+  personality: [],
+  style: '',
+  symbol: '',
+  customSymbol: '',
+  typography: '',
+  colors: {
+    primary: '#0A0A0A',
+    accent: '#D4FF3D',
+    background: '#F2EDE4',
+    presetName: 'custom'
+  },
+  products: []
+};
+
+const totalSteps = 6;
+
+// ============================================================
+// COLOR WHEEL + HARMONY LOGIC
+// ============================================================
+
+// Current wheel state
+const wheelState = {
+  hue: 140,           // 0-360 — selected position on wheel
+  lightness: 50,      // 15-85 — user-controlled
+  saturation: 70,     // fixed for now
+  harmony: 'analogous',
+  customOverride: false,
+};
+
+// HSL <-> HEX conversions
+function hslToHex(h, s, l) {
+  s = s / 100;
+  l = l / 100;
+  const k = n => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => {
+    const color = l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+    return Math.round(255 * color).toString(16).padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`.toUpperCase();
+}
+
+function hexToHsl(hex) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const r = parseInt(hex.slice(0, 2), 16) / 255;
+  const g = parseInt(hex.slice(2, 4), 16) / 255;
+  const b = parseInt(hex.slice(4, 6), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h, s, l = (max + min) / 2;
+  if (max === min) { h = s = 0; }
+  else {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+  return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+}
+
+// Harmony calculators
+function getHarmony(hue, type, lightness = 50, saturation = 70) {
+  const L = lightness;
+  const S = saturation;
+  
+  // Always returns { primary, accent, background } — primary = darkest for brand use, bg = lightest
+  // We compute hues first, then adjust lightness for each role
+  const h = hue;
+  
+  let hues = [];
+  switch (type) {
+    case 'complementary':
+      hues = [h, (h + 180) % 360];
+      break;
+    case 'analogous':
+      hues = [h, (h + 30) % 360, (h + 330) % 360];
+      break;
+    case 'triadic':
+      hues = [h, (h + 120) % 360, (h + 240) % 360];
+      break;
+    case 'split':
+      hues = [h, (h + 150) % 360, (h + 210) % 360];
+      break;
+    case 'monochromatic':
+      hues = [h, h, h];
+      break;
+    case 'tetradic':
+      hues = [h, (h + 90) % 360, (h + 180) % 360, (h + 270) % 360];
+      break;
+    default:
+      hues = [h];
+  }
+  
+  // Always produce exactly 3 brand colors: primary (dark), accent (vivid), background (light)
+  const primaryHue = hues[0];
+  const accentHue = hues[1] !== undefined ? hues[1] : hues[0];
+  const bgHue = hues[2] !== undefined ? hues[2] : hues[0];
+  
+  // Primary: dark version of chosen color (for ink/text)
+  // But if user pulled toward light, keep it aware
+  const primaryL = Math.min(L, 18);  // always deep
+  const primary = hslToHex(primaryHue, Math.min(S, 40), primaryL);
+  
+  // Accent: vivid version — uses user's lightness and full saturation
+  const accentL = Math.max(45, Math.min(L + 15, 70));
+  const accent = hslToHex(accentHue, S, accentL);
+  
+  // Background: soft near-white tinted with the hue
+  const bgL = 92;
+  const bgS = type === 'monochromatic' ? 12 : 18;
+  const background = hslToHex(bgHue, bgS, bgL);
+  
+  return { primary, accent, background, hues };
+}
+
+// Build the color wheel SVG
+function buildColorWheel() {
+  const svg = document.getElementById('wheelSvg');
+  const slicesGroup = document.getElementById('wheelSlices');
+  slicesGroup.innerHTML = '';
+  
+  const cx = 150, cy = 150;
+  const innerR = 60;   // center cut-out
+  const outerR = 140;  // outer edge
+  const rings = 3;     // number of lightness rings
+  const slicesPerRing = 36; // 10° each
+  const gapAngle = 0;   // no gap between slices
+  
+  const ringLightness = [35, 55, 75]; // dark to light going outward
+  
+  for (let ring = 0; ring < rings; ring++) {
+    const r1 = innerR + ((outerR - innerR) / rings) * ring;
+    const r2 = innerR + ((outerR - innerR) / rings) * (ring + 1);
+    const L = ringLightness[ring];
+    
+    for (let i = 0; i < slicesPerRing; i++) {
+      const a1 = (i * 360 / slicesPerRing) - 90; // start from top
+      const a2 = ((i + 1) * 360 / slicesPerRing) - 90;
+      const hue = (i * 360 / slicesPerRing + (360 / slicesPerRing / 2)) % 360;
+      
+      const color = hslToHex(hue, 75, L);
+      const path = describeSlicePath(cx, cy, r1, r2, a1, a2);
+      
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      el.setAttribute('d', path);
+      el.setAttribute('fill', color);
+      el.setAttribute('data-hue', hue);
+      el.setAttribute('data-lightness', L);
+      el.setAttribute('stroke', 'rgba(0,0,0,0.06)');
+      el.setAttribute('stroke-width', '0.5');
+      el.style.cursor = 'pointer';
+      el.style.transition = 'opacity 0.15s';
+      
+      el.addEventListener('mouseenter', () => { el.style.opacity = '0.75'; });
+      el.addEventListener('mouseleave', () => { el.style.opacity = '1'; });
+      el.addEventListener('click', () => {
+        wheelState.hue = hue;
+        wheelState.lightness = L;
+        document.getElementById('lightnessSlider').value = L;
+        document.getElementById('lightnessVal').textContent = L + '%';
+        wheelState.customOverride = false;
+        updateFromWheel();
+      });
+      
+      slicesGroup.appendChild(el);
+    }
+  }
+}
+
+function describeSlicePath(cx, cy, r1, r2, a1Deg, a2Deg) {
+  const a1 = a1Deg * Math.PI / 180;
+  const a2 = a2Deg * Math.PI / 180;
+  const x1_outer = cx + r2 * Math.cos(a1);
+  const y1_outer = cy + r2 * Math.sin(a1);
+  const x2_outer = cx + r2 * Math.cos(a2);
+  const y2_outer = cy + r2 * Math.sin(a2);
+  const x1_inner = cx + r1 * Math.cos(a1);
+  const y1_inner = cy + r1 * Math.sin(a1);
+  const x2_inner = cx + r1 * Math.cos(a2);
+  const y2_inner = cy + r1 * Math.sin(a2);
+  
+  const largeArc = (a2Deg - a1Deg) > 180 ? 1 : 0;
+  
+  return [
+    `M ${x1_outer} ${y1_outer}`,
+    `A ${r2} ${r2} 0 ${largeArc} 1 ${x2_outer} ${y2_outer}`,
+    `L ${x2_inner} ${y2_inner}`,
+    `A ${r1} ${r1} 0 ${largeArc} 0 ${x1_inner} ${y1_inner}`,
+    'Z'
+  ].join(' ');
+}
+
+// Place marker at hue/lightness position
+function placeMarker(element, hue, lightness, size = 'primary') {
+  const cx = 50, cy = 50; // percentage
+  const innerR = 20;      // %  (60/300)
+  const outerR = 46.67;   // %  (140/300)
+  
+  // Determine which ring based on lightness
+  let ringIdx = 1; // default middle
+  if (lightness < 45) ringIdx = 0;
+  else if (lightness > 65) ringIdx = 2;
+  
+  const ringCenterR = innerR + ((outerR - innerR) / 3) * (ringIdx + 0.5);
+  
+  const angleDeg = hue - 90; // 0 hue at top
+  const angleRad = angleDeg * Math.PI / 180;
+  
+  const x = cx + ringCenterR * Math.cos(angleRad);
+  const y = cy + ringCenterR * Math.sin(angleRad);
+  
+  element.style.display = 'block';
+  element.style.left = x + '%';
+  element.style.top = y + '%';
+  element.style.background = hslToHex(hue, 75, lightness);
+}
+
+// Harmony preview swatches (small, in each chip)
+function renderHarmonyPreviews() {
+  document.querySelectorAll('.harmony-chip-swatches').forEach(el => {
+    const type = el.dataset.preview;
+    const result = getHarmony(wheelState.hue, type, wheelState.lightness);
+    el.innerHTML = `
+      <div style="background:${result.primary}"></div>
+      <div style="background:${result.accent}"></div>
+      <div style="background:${result.background}"></div>
+    `;
+  });
+}
+
+// Update final palette display
+function renderFinalPalette() {
+  const container = document.getElementById('finalSwatches');
+  const p = state.colors.primary;
+  const a = state.colors.accent;
+  const b = state.colors.background;
+  
+  // Determine text color (based on bg darkness)
+  const textOn = (hex) => {
+    const hsl = hexToHsl(hex);
+    return hsl.l > 55 ? '#0A0A0A' : '#F2EDE4';
+  };
+  
+  container.innerHTML = `
+    <div class="final-swatch" style="background:${p}; color:${textOn(p)}">
+      <span class="final-swatch-role">PRIMARY</span>
+      <span class="final-swatch-hex">${p}</span>
+    </div>
+    <div class="final-swatch" style="background:${a}; color:${textOn(a)}">
+      <span class="final-swatch-role">ACCENT</span>
+      <span class="final-swatch-hex">${a}</span>
+    </div>
+    <div class="final-swatch" style="background:${b}; color:${textOn(b)}">
+      <span class="final-swatch-role">BACKGROUND</span>
+      <span class="final-swatch-hex">${b}</span>
+    </div>
+  `;
+  
+  // Update label
+  const labels = {
+    complementary: 'COMPLEMENTARY HARMONY',
+    analogous: 'ANALOGOUS HARMONY',
+    triadic: 'TRIADIC HARMONY',
+    split: 'SPLIT-COMPLEMENTARY',
+    monochromatic: 'MONOCHROMATIC',
+    tetradic: 'TETRADIC HARMONY',
+  };
+  document.getElementById('harmonyLabel').textContent = 
+    wheelState.customOverride ? 'CUSTOM PALETTE' : (labels[wheelState.harmony] || 'HARMONY');
+  
+  // Update custom HEX inputs to reflect current values
+  document.getElementById('hexPrimary').value = p;
+  document.getElementById('hexAccent').value = a;
+  document.getElementById('hexBg').value = b;
+  document.getElementById('colorPrimary').value = p;
+  document.getElementById('colorAccent').value = a;
+  document.getElementById('colorBg').value = b;
+}
+
+// Main update flow from wheel selection
+function updateFromWheel() {
+  const result = getHarmony(wheelState.hue, wheelState.harmony, wheelState.lightness);
+  state.colors.primary = result.primary;
+  state.colors.accent = result.accent;
+  state.colors.background = result.background;
+  
+  // Update wheel UI
+  document.getElementById('wheelHex').textContent = hslToHex(wheelState.hue, 75, wheelState.lightness);
+  placeMarker(document.getElementById('wheelMarkerPrimary'), wheelState.hue, wheelState.lightness, 'primary');
+  
+  // Show accent marker at complementary-ish position for visual feedback
+  const accentHsl = hexToHsl(result.accent);
+  placeMarker(document.getElementById('wheelMarkerAccent'), accentHsl.h, accentHsl.l, 'secondary');
+  
+  renderFinalPalette();
+  renderHarmonyPreviews();
+}
+
+function setupColorWheel() {
+  buildColorWheel();
+  
+  // Lightness slider
+  document.getElementById('lightnessSlider').addEventListener('input', (e) => {
+    wheelState.lightness = parseInt(e.target.value);
+    document.getElementById('lightnessVal').textContent = wheelState.lightness + '%';
+    wheelState.customOverride = false;
+    updateFromWheel();
+  });
+  
+  // Harmony chips
+  document.querySelectorAll('.harmony-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.harmony-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      wheelState.harmony = chip.dataset.harmony;
+      wheelState.customOverride = false;
+      updateFromWheel();
+    });
+  });
+  
+  // Custom toggle
+  document.getElementById('customToggleBtn').addEventListener('click', () => {
+    const btn = document.getElementById('customToggleBtn');
+    const panel = document.getElementById('customPanel');
+    btn.classList.toggle('open');
+    panel.classList.toggle('open');
+  });
+  
+  // Initial state
+  updateFromWheel();
+  renderHarmonyPreviews();
+}
+
+const products = [
+  { id: 'business-card', name: 'بطاقة عمل', en: 'BUSINESS CARD', icon: '▭' },
+  { id: 'digital-ad', name: 'إعلان رقمي', en: 'DIGITAL AD', icon: '◨' },
+  { id: 'poster', name: 'بوستر', en: 'PRINT POSTER', icon: '▥' },
+  { id: 'mug', name: 'فنجان قهوة', en: 'COFFEE MUG', icon: '⎕' },
+  { id: 't-shirt', name: 'تيشيرت', en: 'T-SHIRT', icon: '⊤' },
+  { id: 'pen', name: 'قلم', en: 'PEN', icon: '⁄' },
+  { id: 'tote-bag', name: 'حقيبة قماش', en: 'TOTE BAG', icon: '⊓' },
+  { id: 'notebook', name: 'دفتر ملاحظات', en: 'NOTEBOOK', icon: '▯' },
+  { id: 'sticker', name: 'ستيكرز', en: 'STICKERS', icon: '◉' },
+  { id: 'social-post', name: 'منشور سوشيال', en: 'SOCIAL POST', icon: '◈' },
+  { id: 'packaging', name: 'تغليف', en: 'PACKAGING', icon: '▣' },
+  { id: 'website-hero', name: 'هيرو موقع', en: 'WEBSITE HERO', icon: '▬' },
+];
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  renderProgressSteps();
+  setupColorWheel();
+  renderProducts();
+  setupChipHandlers();
+  setupColorInputs();
+  updateProgress();
+}
+
+function renderProgressSteps() {
+  const container = document.getElementById('progressSteps');
+  container.innerHTML = '';
+  for (let i = 0; i < totalSteps; i++) {
+    const d = document.createElement('div');
+    d.className = 'step';
+    container.appendChild(d);
+  }
+}
+
+function renderProducts() {
+  const grid = document.getElementById('productsGrid');
+  products.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'product-card';
+    el.dataset.id = p.id;
+    el.innerHTML = `
+      <span class="check">✓</span>
+      <span class="product-icon">${p.icon}</span>
+      <div class="product-name">${p.name}</div>
+      <div class="product-name-en">${p.en}</div>
+    `;
+    el.addEventListener('click', () => toggleProduct(p.id, el));
+    grid.appendChild(el);
+  });
+}
+
+function setupColorInputs() {
+  const sync = (hexId, colorId, stateKey) => {
+    const hexEl = document.getElementById(hexId);
+    const colorEl = document.getElementById(colorId);
+    hexEl.addEventListener('input', (e) => {
+      let v = e.target.value.trim().toUpperCase();
+      if (!v.startsWith('#')) v = '#' + v;
+      if (/^#[0-9A-F]{6}$/.test(v)) {
+        colorEl.value = v;
+        state.colors[stateKey] = v;
+        wheelState.customOverride = true;
+        renderFinalPalette();
+      }
+    });
+    colorEl.addEventListener('input', (e) => {
+      const v = e.target.value.toUpperCase();
+      hexEl.value = v;
+      state.colors[stateKey] = v;
+      wheelState.customOverride = true;
+      renderFinalPalette();
+    });
+  };
+  sync('hexPrimary', 'colorPrimary', 'primary');
+  sync('hexAccent', 'colorAccent', 'accent');
+  sync('hexBg', 'colorBg', 'background');
+}
+
+function toggleProduct(id, el) {
+  if (state.products.includes(id)) {
+    state.products = state.products.filter(x => x !== id);
+    el.classList.remove('active');
+  } else {
+    state.products.push(id);
+    el.classList.add('active');
+  }
+}
+
+function setupChipHandlers() {
+  document.querySelectorAll('#audienceChips .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#audienceChips .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      state.audience = chip.dataset.value;
+    });
+  });
+
+  document.querySelectorAll('#personalityChips .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('active');
+      const val = chip.dataset.value;
+      if (state.personality.includes(val)) {
+        state.personality = state.personality.filter(x => x !== val);
+      } else {
+        if (state.personality.length < 4) {
+          state.personality.push(val);
+        } else {
+          chip.classList.remove('active');
+        }
+      }
+    });
+  });
+
+  document.querySelectorAll('#styleChips .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#styleChips .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      state.style = chip.dataset.value;
+    });
+  });
+
+  document.querySelectorAll('#symbolChips .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#symbolChips .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      state.symbol = chip.dataset.value;
+    });
+  });
+
+  document.querySelectorAll('#typoChips .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#typoChips .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      state.typography = chip.dataset.value;
+    });
+  });
+}
+
+// (setupColorInputs defined above)
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function nextStep() {
+  if (!validateStep(state.currentStep)) return;
+  saveCurrentStep();
+  if (state.currentStep < totalSteps - 1) {
+    showStep(state.currentStep + 1);
+  }
+}
+
+function prevStep() {
+  if (state.currentStep > 0) {
+    showStep(state.currentStep - 1);
+  }
+}
+
+function showStep(n) {
+  document.querySelectorAll('.step-card').forEach(card => card.classList.remove('active'));
+  const target = document.querySelector(`.step-card[data-step="${n}"]`);
+  if (target) target.classList.add('active');
+  state.currentStep = n;
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function saveCurrentStep() {
+  if (state.currentStep === 0) {
+    state.brandName = document.getElementById('brandName').value.trim() || 'your brand';
+    state.tagline = document.getElementById('tagline').value.trim();
+    state.industry = document.getElementById('industry').value.trim() || 'business';
+  }
+  if (state.currentStep === 3) {
+    state.customSymbol = document.getElementById('customSymbol').value.trim();
+  }
+}
+
+function validateStep(n) {
+  if (n === 0) {
+    const name = document.getElementById('brandName').value.trim();
+    if (!name) {
+      alert('يرجى إدخال اسم البراند أولاً.');
+      return false;
+    }
+  }
+  return true;
+}
+
+function updateProgress() {
+  const pct = Math.round(((state.currentStep + 1) / totalSteps) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  
+  document.querySelectorAll('.progress-steps .step').forEach((s, i) => {
+    s.classList.remove('done', 'current');
+    if (i < state.currentStep) s.classList.add('done');
+    if (i === state.currentStep) s.classList.add('current');
+  });
+}
+
+// ============================================================
+// PROMPT GENERATION
+// ============================================================
+
+function getBrandCore() {
+  const symbol = state.customSymbol || state.symbol || 'geometric abstract mark';
+  const personality = state.personality.join(', ') || 'modern';
+  const style = state.style || 'minimal modern aesthetic';
+  const typo = state.typography || 'modern sans-serif';
+  
+  return { symbol, personality, style, typo };
+}
+
+function generateLogoPrompt() {
+  const core = getBrandCore();
+  return `LAYER 01 — IDENTIFY:
+Horizontal brand lockup for a ${state.industry} called "${state.brandName}".
+Composed of a geometric symbol on the left and a wordmark on the right, 
+read as a single unit. For ${state.audience || 'modern audience'}.
+
+LAYER 02 — SYMBOL + WORDMARK:
+Symbol: ${core.symbol}.
+Wordmark "${state.brandName}" uses ${core.typo}.
+Personality: ${core.personality}.
+Visual reference: ${core.style}.
+
+Lockup rules:
+- symbol height exactly equals the cap-height of "${state.brandName}"
+- horizontal gap between symbol and word = 20% of symbol width
+- symbol baseline aligned with text baseline
+- both elements sit on a shared invisible horizontal line
+
+LAYER 03 — LOCK COLORS:
+Use only these three colors, nowhere else:
+- ${state.colors.primary} (symbol, wordmark primary)
+- ${state.colors.accent} (accent detail)
+- ${state.colors.background} (canvas background)
+No gradients. No tints. No additional colors permitted.
+
+LAYER 04 — FORBID:
+Do not rotate the symbol or the text.
+Do not change the proportion between symbol and wordmark.
+Do not stack vertically.
+Do not add shadows, glows, outlines, or 3D effects.
+Do not add any additional text, icons, or decorative elements.
+Background must remain flat solid — no textures, no patterns.
+
+Output: clean vector-style flat design, centered composition, 
+generous whitespace around the lockup.`;
+}
+
+function generateBusinessCardPrompt() {
+  const core = getBrandCore();
+  return `modern ${core.personality} business card mockup for "${state.brandName}", 
+shown with both front and back sides visible, slight tilt angle.
+
+FRONT SIDE:
+solid ${state.colors.primary} background,
+large ${core.symbol} centered in ${state.colors.accent},
+no text on the front — pure visual impact.
+
+BACK SIDE:
+${state.colors.background} background,
+small logo top-left: symbol + "${state.brandName}" wordmark in ${core.typo},
+serial code "BRN/001" in monospace font top-right,
+thin horizontal divider below header,
+"Full Name" in bold sans-serif,
+"Job Title" in small monospace italic,
+contact details below: email and phone,
+small dark QR scan square (20x20mm) bottom-right.
+
+STYLING:
+shot on dark slate surface, dramatic side lighting,
+premium thick card stock (350gsm) with soft shadow beneath,
+editorial product photography style.
+Visual reference: ${core.style}.
+
+STRICT RULES:
+use only these colors: ${state.colors.primary}, ${state.colors.accent}, ${state.colors.background}.
+no gradients, no decorative backgrounds, no stock icons,
+no additional typography styles beyond what's specified.`;
+}
+
+function generateAdPrompt() {
+  const core = getBrandCore();
+  const taglineText = state.tagline || "discover something different";
+  return `bold ${core.personality} digital advertisement for "${state.brandName}", 
+square format (1080x1080px for social media).
+
+BACKGROUND:
+solid ${state.colors.primary}, no texture, no gradient.
+
+TOP BAR:
+small monospace code comment "// ad_001.${state.brandName.toLowerCase()}" 
+in ${state.colors.accent} on top-left,
+small "2026" text in ${state.colors.background} on top-right,
+below: small logo with symbol + bold wordmark in ${state.colors.background}.
+
+HEADLINE (three stacked lines, ultra-bold, huge):
+"${taglineText}" split across three lines,
+using contrast between ${state.colors.background} and ${state.colors.accent}.
+The middle word has a visual accent (underline, color block, or highlight).
+
+SUPPORTING ELEMENTS:
+short ${state.colors.accent} horizontal accent line under headline,
+subheading in ${state.colors.background},
+solid ${state.colors.accent} call-to-action button: "LEARN MORE →",
+website URL bottom-right in gray monospace.
+
+MOOD:
+${core.personality}, editorial poster aesthetic,
+high contrast typography, generous negative space.
+Visual reference: ${core.style}.
+
+RULES:
+only three colors: ${state.colors.primary}, ${state.colors.accent}, ${state.colors.background}.
+no product screenshots, no stock photography, no icons beyond the CTA arrow.
+no fake testimonials or ratings.`;
+}
+
+function generatePosterPrompt() {
+  const core = getBrandCore();
+  return `bold editorial print poster for "${state.brandName}",
+portrait format (A3 ratio, 297x420mm).
+
+BACKGROUND:
+${state.colors.background} across most of the poster.
+
+TOP ACCENT BAR:
+solid ${state.colors.accent} bar spanning full width,
+contains: small logo (symbol + wordmark) on left in ${state.colors.primary},
+"MANIFESTO · 01" in monospace on right.
+
+HEADLINE (body of poster):
+small "A MANIFESTO" caption in ${state.colors.primary} bold,
+three massive stacked words in ${state.colors.primary}:
+powerful short phrase derived from "${state.tagline || state.industry}",
+with a horizontal ${state.colors.accent} bar passing behind the middle word.
+
+LARGE SYMBOL:
+to the right of the headline, a large ${state.colors.primary} square
+containing the ${core.symbol} in ${state.colors.accent}.
+
+MANIFESTO POINTS (three columns below):
+"01 /", "02 /", "03 /" in monospace labels,
+each with a short bold principle in ${state.colors.primary}
+and two lines of body text in regular weight.
+
+CTA FOOTER:
+solid ${state.colors.primary} rectangle at bottom,
+"START HERE →" in ${state.colors.accent} ultra-bold.
+
+MOOD:
+${core.personality}, editorial magazine aesthetic,
+feels like a poster in a design studio, not an ad.
+Visual reference: ${core.style}.
+
+RULES:
+only three colors: ${state.colors.primary}, ${state.colors.accent}, ${state.colors.background}.
+no photography, only typography and geometric shapes.`;
+}
+
+function generateMugPrompt() {
+  const core = getBrandCore();
+  return `two ceramic coffee mugs displayed side by side on a neutral 
+light gray surface, studio product photography.
+
+MUG 01 (LEFT) — DARK VERSION:
+matte ${state.colors.primary} ceramic,
+large ${core.symbol} wrapping around the center in ${state.colors.accent},
+below the symbol: "${state.brandName}" wordmark in ${state.colors.background},
+${core.typo}, medium size.
+
+MUG 02 (RIGHT) — LIGHT VERSION:
+${state.colors.background} ceramic,
+typographic print in ${state.colors.primary} italic:
+short poetic phrase from "${state.tagline || 'break the ordinary'}",
+with a small ${state.colors.accent} horizontal accent.
+small ${state.colors.primary} symbol centered below the text.
+
+BACKGROUND:
+soft light gray surface, diffused studio lighting from upper-left,
+subtle shadows beneath each mug for realism.
+
+RULES:
+only three brand colors: ${state.colors.primary}, ${state.colors.accent}, ${state.colors.background}.
+no coffee liquid, no steam, no spoons, no additional logos.`;
+}
+
+function generateTshirtPrompt() {
+  const core = getBrandCore();
+  return `two t-shirts displayed flat-lay on a neutral light gray background,
+studio product photography, top-down view.
+
+T-SHIRT 01 (LEFT) — DAILY POCKET TEE:
+${state.colors.primary} cotton t-shirt,
+small embroidered pocket logo on the left chest area:
+tiny ${core.symbol} in ${state.colors.accent} — approximately 30mm wide.
+no wordmark, pure minimal branding.
+
+T-SHIRT 02 (RIGHT) — STATEMENT TEE:
+${state.colors.background} cotton t-shirt,
+large centered front print, three stacked words in ultra-bold ${state.colors.primary}:
+powerful short phrase from "${state.tagline || state.brandName + ' manifesto'}",
+with a ${state.colors.accent} horizontal bar passing behind the middle word,
+below in small monospace italic: "— ${state.brandName} —".
+
+BACKGROUND AND LIGHTING:
+light gray surface, soft diffused overhead lighting,
+realistic shadows, no wrinkles.
+
+RULES:
+only three brand colors.
+no photography of people wearing the shirts.
+centered composition, equal spacing.`;
+}
+
+function generatePenPrompt() {
+  const core = getBrandCore();
+  return `professional branded writing pen displayed horizontally on a 
+neutral light gray surface, product photography close-up.
+
+PEN CONSTRUCTION:
+matte ${state.colors.primary} cylindrical barrel,
+${state.colors.accent} tip cap (approximately 20mm),
+the cap incorporates the ${core.symbol} as a visual reference.
+
+BARREL ENGRAVING:
+laser-engraved text along the body in ${state.colors.background} color,
+positioned 1/3 from the tip:
+"${state.brandName.toUpperCase()}" in small ultra-bold sans-serif caps,
+further along: "// write something real" in tiny monospace italic.
+
+END CAP:
+matte ${state.colors.primary} cylindrical cap at the opposite end,
+slim metal clip in matte ${state.colors.primary}.
+
+LIGHTING AND SETUP:
+soft directional lighting from the upper-left,
+realistic shadow beneath the pen,
+sharp focus on engraved text,
+background: smooth light gray.
+
+RULES:
+only three brand colors.
+no color gradients, no metallic finishes beyond matte.`;
+}
+
+function generateToteBagPrompt() {
+  const core = getBrandCore();
+  return `cotton canvas tote bag displayed flat on a neutral surface,
+studio product photography, front view.
+
+BAG COLOR: natural canvas in ${state.colors.background}.
+
+FRONT PRINT (large, centered):
+${core.symbol} in ${state.colors.primary} at the top,
+"${state.brandName}" wordmark below in ${core.typo},
+small ${state.colors.accent} horizontal accent line between symbol and text,
+optional short phrase from "${state.tagline || ''}" at the bottom 
+in small monospace.
+
+HANDLES: natural cotton in ${state.colors.primary}.
+
+BACKGROUND:
+soft neutral gray surface,
+diffused overhead lighting,
+slight fabric texture visible,
+realistic shadows.
+
+RULES:
+only three brand colors.
+no people, no packaging, centered composition.`;
+}
+
+function generateNotebookPrompt() {
+  const core = getBrandCore();
+  return `premium hardcover notebook displayed at a slight angle,
+studio product photography, closed cover visible.
+
+COVER:
+matte ${state.colors.primary} hardcover,
+embossed or foil-stamped ${core.symbol} centered in ${state.colors.accent},
+"${state.brandName}" wordmark below in ${core.typo} in ${state.colors.background},
+small monospace text at bottom: "NOTEBOOK · 01".
+
+BINDING:
+visible ${state.colors.accent} elastic band closure,
+exposed stitching in ${state.colors.accent} thread at spine.
+
+BACKGROUND:
+neutral gray surface with subtle texture,
+dramatic side lighting to show embossing depth,
+soft shadows beneath the notebook.
+
+RULES:
+only three brand colors.
+no pens, no open pages visible, no additional props.
+premium craftsmanship feel.`;
+}
+
+function generateStickerPrompt() {
+  const core = getBrandCore();
+  return `set of three sticker designs for "${state.brandName}",
+displayed flat on a neutral background, top-down view.
+
+STICKER 01 (die-cut circle):
+${state.colors.primary} background with ${core.symbol} in ${state.colors.accent} centered.
+
+STICKER 02 (rectangular):
+${state.colors.background} background,
+"${state.brandName}" wordmark in bold ${state.colors.primary},
+short monospace tag "EST. 2026" in ${state.colors.accent}.
+
+STICKER 03 (die-cut custom shape):
+${state.colors.accent} background,
+typographic quote from "${state.tagline || 'think different'}" 
+in ultra-bold ${state.colors.primary}.
+
+PRESENTATION:
+glossy vinyl finish with subtle sheen,
+light gray background surface,
+slight peel corner on one sticker to show dimension,
+realistic shadows.
+
+RULES:
+only three brand colors, consistent across all three stickers.
+clean die-cut edges, no cheap clipart.`;
+}
+
+function generateSocialPostPrompt() {
+  const core = getBrandCore();
+  return `social media post for "${state.brandName}", 
+square format (1080x1080px) for Instagram/LinkedIn.
+
+BACKGROUND:
+${state.colors.background} with a subtle geometric pattern
+inspired by ${core.symbol}, very low opacity.
+
+LAYOUT:
+small logo (symbol + wordmark) top-left in ${state.colors.primary},
+monospace date "22 . 04 . 2026" top-right in ${state.colors.primary},
+
+CENTERED HEADLINE (bold, 2-3 lines):
+a thought-provoking short statement from "${state.tagline || state.industry}"
+in ultra-bold ${state.colors.primary},
+key word highlighted with ${state.colors.accent} block underline.
+
+BOTTOM:
+short monospace caption in ${state.colors.primary},
+small ${state.colors.accent} arrow indicator pointing right.
+
+MOOD:
+${core.personality}, editorial social media aesthetic,
+feels curated, not promotional.
+Visual reference: ${core.style}.
+
+RULES:
+only three brand colors.
+no stock imagery, no emojis, no fake engagement metrics.`;
+}
+
+function generatePackagingPrompt() {
+  const core = getBrandCore();
+  return `premium product packaging box for "${state.brandName}",
+displayed at a three-quarter angle, studio photography.
+
+BOX CONSTRUCTION:
+rigid matte ${state.colors.primary} cardboard box,
+dimensions suggest a small luxury product (15x10x5cm).
+
+FRONT PANEL:
+large ${core.symbol} debossed or foil-stamped in ${state.colors.accent},
+"${state.brandName}" wordmark below in ${core.typo}, ${state.colors.background} color,
+small monospace text at bottom: "EDITION 01".
+
+SIDE PANEL (partially visible):
+${state.colors.accent} vertical strip,
+contains vertical monospace text in ${state.colors.primary}.
+
+INSIDE (slightly open):
+${state.colors.background} tissue paper visible,
+hint of contents suggested by subtle shadow.
+
+BACKGROUND:
+dark neutral surface with dramatic directional lighting,
+soft reflection beneath the box,
+premium unboxing aesthetic.
+
+RULES:
+only three brand colors.
+no product shown inside, no ribbons, no decorative tags.`;
+}
+
+function generateWebsiteHeroPrompt() {
+  const core = getBrandCore();
+  return `website hero section design for "${state.brandName}",
+desktop format (1920x1080px), full-bleed layout.
+
+BACKGROUND:
+${state.colors.background} with subtle geometric grid pattern 
+at 5% opacity in ${state.colors.primary}.
+
+TOP NAVIGATION:
+small logo left (symbol + wordmark),
+minimal nav items: "Work · About · Contact" in right-aligned 
+${state.colors.primary} monospace,
+${state.colors.accent} "Start Project" button far right.
+
+HERO CONTENT:
+massive headline occupying 60% of viewport:
+two lines of ultra-bold text in ${state.colors.primary},
+derived from "${state.tagline || state.industry}",
+one key word highlighted with ${state.colors.accent} block behind it.
+
+SUPPORTING:
+short paragraph (2-3 lines) in regular weight ${state.colors.primary},
+two CTA buttons: primary in ${state.colors.primary} with 
+${state.colors.accent} text, secondary outlined.
+
+DECORATIVE ELEMENT:
+large ${core.symbol} positioned off-center on the right,
+rendered in ${state.colors.accent} with subtle animation hint.
+
+BOTTOM INDICATORS:
+small monospace "SCROLL ↓" bottom-center,
+date stamp bottom-left in ${state.colors.primary}.
+
+MOOD:
+${core.personality}, editorial web design,
+feels like a magazine spread, not a SaaS landing page.
+Visual reference: ${core.style}.
+
+RULES:
+only three brand colors.
+no stock hero images, no fake user avatars, no generic icons.`;
+}
+
+const productGenerators = {
+  'business-card': { fn: generateBusinessCardPrompt, name: 'بطاقة العمل', en: 'Business Card', notes: 'اطبع على ورق سميك (350gsm) مع تشطيب مط. جرّب سبوت UV على الشعار لتأثير راقي.' },
+  'digital-ad': { fn: generateAdPrompt, name: 'الإعلان الرقمي', en: 'Digital Ad', notes: 'استخدم هذا البرومبت للسوشيال ميديا بأبعاد مربعة. للفيسبوك/إنستجرام.' },
+  'poster': { fn: generatePosterPrompt, name: 'البوستر المطبوع', en: 'Print Poster', notes: 'للطباعة بحجم A3 أو A2. استخدم ورق مط 200gsm على الأقل.' },
+  'mug': { fn: generateMugPrompt, name: 'الفنجان', en: 'Coffee Mug', notes: 'استخدم طباعة الحرارة (sublimation) للفنجان السيراميكي. 11oz أو 15oz.' },
+  't-shirt': { fn: generateTshirtPrompt, name: 'التيشيرت', en: 'T-Shirt', notes: 'طباعة سكرين للتصاميم الكبيرة، تطريز للشعار الصغير في الجيب.' },
+  'pen': { fn: generatePenPrompt, name: 'القلم', en: 'Pen', notes: 'نقش الليزر على المعدن يعطي نتيجة احترافية ودائمة.' },
+  'tote-bag': { fn: generateToteBagPrompt, name: 'حقيبة القماش', en: 'Tote Bag', notes: 'استخدم قطن طبيعي 12oz. طباعة سكرين للديمومة.' },
+  'notebook': { fn: generateNotebookPrompt, name: 'الدفتر', en: 'Notebook', notes: 'غلاف مغلف قماش أو جلد صناعي. استخدم التطريز أو الحفر الحراري للشعار.' },
+  'sticker': { fn: generateStickerPrompt, name: 'الستيكرز', en: 'Stickers', notes: 'فينيل لامع أو مط. die-cut للأشكال المخصصة.' },
+  'social-post': { fn: generateSocialPostPrompt, name: 'منشور السوشيال', en: 'Social Post', notes: 'احفظ قالب 1080x1080 واستخدمه لكل منشوراتك للثبات البصري.' },
+  'packaging': { fn: generatePackagingPrompt, name: 'التغليف', en: 'Packaging', notes: 'استخدم كرتون صلب مع تشطيب مط. الحفر والـ foil stamping ترفع القيمة.' },
+  'website-hero': { fn: generateWebsiteHeroPrompt, name: 'هيرو الموقع', en: 'Website Hero', notes: 'هذا مرجع تصميمي. المطور سيحتاج إلى تصميم Figma فعلي للتنفيذ.' },
+};
+
+// ============================================================
+// RESULTS RENDERING
+// ============================================================
+function generateBrand() {
+  // Save last step data
+  saveCurrentStep();
+  
+  // Hide form, show results
+  document.getElementById('formSection').style.display = 'none';
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('resultsSection').classList.add('active');
+  
+  renderBrandPreview();
+  renderPrompts();
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderBrandPreview() {
+  const preview = document.getElementById('brandPreview');
+  const personalityLabel = state.personality.length ? state.personality.slice(0, 3).join(' · ') : 'modern';
+  
+  preview.innerHTML = `
+    <div class="preview-name">${state.brandName}</div>
+    <div class="preview-tagline">${state.tagline || 'your brand, your way'}</div>
+    <div class="preview-swatches">
+      <div class="preview-swatch" style="background: ${state.colors.primary}">
+        <div class="hex">${state.colors.primary.toUpperCase()}</div>
+      </div>
+      <div class="preview-swatch" style="background: ${state.colors.accent}">
+        <div class="hex">${state.colors.accent.toUpperCase()}</div>
+      </div>
+      <div class="preview-swatch" style="background: ${state.colors.background}">
+        <div class="hex">${state.colors.background.toUpperCase()}</div>
+      </div>
+    </div>
+    <div class="preview-meta">
+      <div class="meta-item"><span>INDUSTRY</span><span>${state.industry}</span></div>
+      <div class="meta-item"><span>PERSONALITY</span><span>${personalityLabel}</span></div>
+      <div class="meta-item"><span>PRODUCTS</span><span>${state.products.length + 1} deliverables</span></div>
+    </div>
+  `;
+}
+
+function renderPrompts() {
+  const container = document.getElementById('promptsContainer');
+  container.innerHTML = '';
+  
+  const allPrompts = [];
+  
+  // Always include logo
+  allPrompts.push({
+    num: '01',
+    title: 'الشعار الرئيسي (Logo Lockup)',
+    en: 'Primary Logo',
+    prompt: generateLogoPrompt(),
+    notes: 'ولّد هذا أولاً. اختر أفضل نسخة من 10-20 توليد. ثم عدّل في Figma لتثبيت القياسات بدقة.'
+  });
+  
+  // Add selected products
+  state.products.forEach((pid, idx) => {
+    const gen = productGenerators[pid];
+    if (gen) {
+      allPrompts.push({
+        num: String(idx + 2).padStart(2, '0'),
+        title: gen.name,
+        en: gen.en,
+        prompt: gen.fn(),
+        notes: gen.notes
+      });
+    }
+  });
+  
+  allPrompts.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'prompt-card';
+    const encodedPrompt = encodeURIComponent(p.prompt);
+    card.innerHTML = `
+      <div class="prompt-header">
+        <div class="prompt-title-wrap">
+          <div class="prompt-num">PROMPT ${p.num}</div>
+          <div class="prompt-title">${p.title} <span style="opacity:0.5;font-weight:400;font-size:12px">· ${p.en}</span></div>
+        </div>
+        <div class="prompt-actions">
+          <button class="copy-btn" data-idx="${i}">COPY</button>
+          <a class="open-in-btn" href="https://gemini.google.com/app" target="_blank" rel="noopener" title="افتح Gemini — انسخ البرومبت أولاً"><span class="icon">↗</span> GEMINI</a>
+          <a class="open-in-btn" href="https://chat.openai.com/" target="_blank" rel="noopener" title="افتح ChatGPT — انسخ البرومبت أولاً"><span class="icon">↗</span> GPT</a>
+          <a class="open-in-btn" href="https://www.midjourney.com/app" target="_blank" rel="noopener" title="افتح Midjourney — انسخ البرومبت أولاً"><span class="icon">↗</span> MJ</a>
+        </div>
+      </div>
+      <div class="prompt-body" id="prompt-${i}">${escapeHtml(p.prompt)}</div>
+      <div class="prompt-notes"><strong>NOTE:</strong> ${p.notes}</div>
+    `;
+    container.appendChild(card);
+  });
+  
+  document.getElementById('promptCount').textContent = `${allPrompts.length} PROMPTS GENERATED`;
+  
+  // Attach copy handlers
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const idx = e.target.dataset.idx;
+      const text = document.getElementById(`prompt-${idx}`).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.textContent;
+        btn.textContent = '✓ COPIED';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+    });
+  });
+  
+  // Store for download
+  window._allPrompts = allPrompts;
+}
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+// ============================================================
+// DOWNLOAD
+// ============================================================
+function downloadAll() {
+  if (!window._allPrompts) return;
+  
+  let txt = `BRAND BUILDER — AI PROMPT GUIDE\n`;
+  txt += `Generated: ${new Date().toLocaleDateString('en-GB')}\n`;
+  txt += `${'='.repeat(70)}\n\n`;
+  txt += `BRAND: ${state.brandName}\n`;
+  txt += `TAGLINE: ${state.tagline || '(not set)'}\n`;
+  txt += `INDUSTRY: ${state.industry}\n`;
+  txt += `AUDIENCE: ${state.audience || '(not set)'}\n`;
+  txt += `PERSONALITY: ${state.personality.join(', ') || 'modern'}\n`;
+  txt += `STYLE: ${state.style || '(not set)'}\n`;
+  txt += `SYMBOL: ${state.customSymbol || state.symbol}\n`;
+  txt += `TYPOGRAPHY: ${state.typography}\n`;
+  txt += `COLORS: ${state.colors.primary} · ${state.colors.accent} · ${state.colors.background}\n`;
+  txt += `\n${'='.repeat(70)}\n\n`;
+  
+  window._allPrompts.forEach((p) => {
+    txt += `PROMPT ${p.num} — ${p.en} (${p.title})\n`;
+    txt += `${'-'.repeat(70)}\n\n`;
+    txt += p.prompt + '\n\n';
+    txt += `NOTE: ${p.notes}\n\n`;
+    txt += `${'='.repeat(70)}\n\n`;
+  });
+  
+  downloadFile(txt, `${slugName()}-prompts.txt`, 'text/plain;charset=utf-8');
+}
+
+function downloadJSON() {
+  if (!window._allPrompts) return;
+  
+  const data = {
+    generated: new Date().toISOString(),
+    brand: {
+      name: state.brandName,
+      tagline: state.tagline,
+      industry: state.industry,
+      audience: state.audience,
+      personality: state.personality,
+      style: state.style,
+      symbol: state.customSymbol || state.symbol,
+      typography: state.typography,
+    },
+    palette: {
+      primary: state.colors.primary,
+      accent: state.colors.accent,
+      background: state.colors.background,
+      harmony: wheelState.customOverride ? 'custom' : wheelState.harmony,
+    },
+    prompts: window._allPrompts.map(p => ({
+      number: p.num,
+      title: p.title,
+      title_en: p.en,
+      prompt: p.prompt,
+      note: p.notes,
+    })),
+  };
+  
+  downloadFile(JSON.stringify(data, null, 2), `${slugName()}-brand.json`, 'application/json');
+}
+
+function downloadPDF() {
+  if (!window._allPrompts) { alert('No prompts generated yet'); return; }
+  if (typeof window.jspdf === 'undefined') {
+    alert('PDF library failed to load. Please check your internet connection and reload.');
+    return;
+  }
+  
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  
+  // Colors from brand palette
+  const primary = hexToRgb(state.colors.primary);
+  const accent = hexToRgb(state.colors.accent);
+  const bg = hexToRgb(state.colors.background);
+  const ink = [10, 10, 10];
+  const bronze = [184, 149, 106];
+  const gray = [95, 94, 90];
+  const cream = [242, 237, 228];
+  
+  const PAGE_W = 210;
+  const PAGE_H = 297;
+  const MARGIN = 18;
+  const CONTENT_W = PAGE_W - (MARGIN * 2);
+  
+  // ============ COVER PAGE ============
+  doc.setFillColor(...ink);
+  doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
+  
+  // Top accent bar
+  doc.setFillColor(...accent);
+  doc.rect(0, 0, PAGE_W, 3, 'F');
+  
+  // Top meta
+  doc.setTextColor(...bronze);
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(8);
+  doc.text('// BRAND IDENTITY GUIDE', MARGIN, 18);
+  doc.text(`${new Date().getFullYear()}`, PAGE_W - MARGIN, 18, { align: 'right' });
+  
+  // Thin line
+  doc.setDrawColor(...cream);
+  doc.setLineWidth(0.1);
+  doc.line(MARGIN, 22, PAGE_W - MARGIN, 22);
+  
+  // Brand name HUGE
+  doc.setTextColor(...cream);
+  doc.setFont('helvetica', 'bold');
+  const brandTitle = state.brandName.toLowerCase();
+  const titleSize = brandTitle.length > 14 ? 44 : 64;
+  doc.setFontSize(titleSize);
+  doc.text(brandTitle, MARGIN, 110);
+  
+  // Tagline
+  if (state.tagline) {
+    doc.setTextColor(...accent);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(14);
+    const taglineLines = doc.splitTextToSize(state.tagline, CONTENT_W);
+    doc.text(taglineLines, MARGIN, 128);
+  }
+  
+  // Color block
+  const blockY = 170;
+  const blockH = 38;
+  const colW = CONTENT_W / 3;
+  
+  doc.setFillColor(...primary);
+  doc.rect(MARGIN, blockY, colW, blockH, 'F');
+  doc.setFillColor(...accent);
+  doc.rect(MARGIN + colW, blockY, colW, blockH, 'F');
+  doc.setFillColor(...bg);
+  doc.rect(MARGIN + colW * 2, blockY, colW, blockH, 'F');
+  
+  // HEX labels on swatches
+  doc.setFont('courier', 'bold');
+  doc.setFontSize(8);
+  doc.setTextColor(...cream);
+  doc.text('PRIMARY', MARGIN + 3, blockY + 6);
+  doc.text(state.colors.primary, MARGIN + 3, blockY + blockH - 3);
+  doc.setTextColor(...ink);
+  doc.text('ACCENT', MARGIN + colW + 3, blockY + 6);
+  doc.text(state.colors.accent, MARGIN + colW + 3, blockY + blockH - 3);
+  doc.text('BACKGROUND', MARGIN + colW * 2 + 3, blockY + 6);
+  doc.text(state.colors.background, MARGIN + colW * 2 + 3, blockY + blockH - 3);
+  
+  // Footer info
+  doc.setTextColor(...cream);
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(7);
+  doc.text('INDUSTRY', MARGIN, 235);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text((state.industry || '—').substring(0, 50), MARGIN, 241);
+  
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(7);
+  doc.text('AUDIENCE', MARGIN, 252);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text((state.audience || '—').substring(0, 50), MARGIN, 258);
+  
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(7);
+  doc.text('PERSONALITY', MARGIN, 269);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  const personalityText = state.personality.join(' · ') || 'modern';
+  doc.text(personalityText.substring(0, 60), MARGIN, 275);
+  
+  // Bottom label
+  doc.setDrawColor(...bronze);
+  doc.setLineWidth(0.3);
+  doc.line(MARGIN, 283, PAGE_W - MARGIN, 283);
+  
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...bronze);
+  doc.text('BRAND GUIDE · V1.0', MARGIN, 290);
+  doc.text(`${window._allPrompts.length} PROMPTS INCLUDED`, PAGE_W - MARGIN, 290, { align: 'right' });
+  
+  // ============ PAGE 2 — BRAND SUMMARY ============
+  doc.addPage();
+  doc.setFillColor(...bg);
+  doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
+  
+  addPageHeader(doc, 'BRAND SUMMARY · الملخص', '02', PAGE_W, MARGIN, ink, bronze, accent);
+  
+  let y = 42;
+  
+  // Identity section
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(...ink);
+  doc.text('Identity', MARGIN, y);
+  y += 3;
+  doc.setDrawColor(...accent);
+  doc.setLineWidth(1.2);
+  doc.line(MARGIN, y, MARGIN + 20, y);
+  y += 10;
+  
+  const identityRows = [
+    ['Name', state.brandName],
+    ['Tagline', state.tagline || '—'],
+    ['Industry', state.industry || '—'],
+    ['Audience', state.audience || '—'],
+    ['Style direction', state.style || '—'],
+    ['Symbol concept', (state.customSymbol || state.symbol || '—').substring(0, 80)],
+    ['Typography', state.typography || '—'],
+  ];
+  
+  identityRows.forEach(([k, v]) => {
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...bronze);
+    doc.text(k.toUpperCase(), MARGIN, y);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(...ink);
+    const lines = doc.splitTextToSize(v, CONTENT_W - 45);
+    doc.text(lines, MARGIN + 45, y);
+    y += Math.max(7, lines.length * 4.5);
+  });
+  
+  y += 8;
+  
+  // Colors section
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(...ink);
+  doc.text('Palette', MARGIN, y);
+  y += 3;
+  doc.setDrawColor(...accent);
+  doc.setLineWidth(1.2);
+  doc.line(MARGIN, y, MARGIN + 20, y);
+  y += 10;
+  
+  // Three color rows with swatches
+  const swatchSize = 18;
+  [
+    ['Primary', state.colors.primary, primary, 'Text, ink, dominant structure'],
+    ['Accent', state.colors.accent, accent, 'Highlights, CTAs, key details'],
+    ['Background', state.colors.background, bg, 'Surfaces, canvas, whitespace']
+  ].forEach(([role, hex, rgb, desc]) => {
+    doc.setFillColor(...rgb);
+    doc.rect(MARGIN, y, swatchSize, swatchSize, 'F');
+    doc.setDrawColor(...ink);
+    doc.setLineWidth(0.2);
+    doc.rect(MARGIN, y, swatchSize, swatchSize);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(...ink);
+    doc.text(role, MARGIN + swatchSize + 6, y + 6);
+    
+    doc.setFont('courier', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...bronze);
+    doc.text(hex, MARGIN + swatchSize + 6, y + 12);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...gray);
+    doc.text(desc, MARGIN + swatchSize + 6, y + 17);
+    
+    y += swatchSize + 6;
+  });
+  
+  y += 6;
+  
+  // Usage rules
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(...ink);
+  doc.text('Rules', MARGIN, y);
+  y += 3;
+  doc.setDrawColor(...accent);
+  doc.setLineWidth(1.2);
+  doc.line(MARGIN, y, MARGIN + 20, y);
+  y += 10;
+  
+  const rules = [
+    '01 · Use only the three brand colors. No other colors permitted.',
+    '02 · The symbol and wordmark together form the primary lockup.',
+    '03 · Accent color should never exceed 15% of any composition.',
+    '04 · Keep generous whitespace around the logo — at least 20% of its width.',
+    '05 · Always paraphrase AI output in Figma before final delivery.',
+  ];
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9.5);
+  doc.setTextColor(...ink);
+  rules.forEach(rule => {
+    const lines = doc.splitTextToSize(rule, CONTENT_W);
+    doc.text(lines, MARGIN, y);
+    y += lines.length * 5 + 1;
+  });
+  
+  addPageFooter(doc, 2, PAGE_W, PAGE_H, MARGIN, bronze, state.brandName);
+  
+  // ============ PROMPT PAGES ============
+  window._allPrompts.forEach((p, idx) => {
+    doc.addPage();
+    doc.setFillColor(...bg);
+    doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
+    
+    addPageHeader(doc, `PROMPT ${p.num} · ${p.en.toUpperCase()}`, p.num, PAGE_W, MARGIN, ink, bronze, accent);
+    
+    let py = 42;
+    
+    // Title
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.setTextColor(...ink);
+    doc.text(p.en, MARGIN, py);
+    py += 8;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.setTextColor(...gray);
+    doc.text(p.title, MARGIN, py);
+    py += 10;
+    
+    // Accent line
+    doc.setDrawColor(...accent);
+    doc.setLineWidth(1.5);
+    doc.line(MARGIN, py, MARGIN + 30, py);
+    py += 8;
+    
+    // Prompt label
+    doc.setFont('courier', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(...bronze);
+    doc.text('// PROMPT · copy this into your AI tool', MARGIN, py);
+    py += 6;
+    
+    // Prompt body — in a dark box
+    const promptLines = doc.splitTextToSize(p.prompt, CONTENT_W - 12);
+    const promptHeight = Math.min(promptLines.length * 3.4 + 10, PAGE_H - py - 40);
+    
+    doc.setFillColor(...ink);
+    doc.rect(MARGIN, py, CONTENT_W, promptHeight, 'F');
+    
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...cream);
+    
+    // Only render lines that fit in the box
+    const maxLinesInBox = Math.floor((promptHeight - 10) / 3.4);
+    const visibleLines = promptLines.slice(0, maxLinesInBox);
+    doc.text(visibleLines, MARGIN + 6, py + 6);
+    
+    py += promptHeight + 6;
+    
+    // If content overflowed, render continuation on next page
+    if (promptLines.length > maxLinesInBox && py < PAGE_H - 40) {
+      // Notes
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(...bronze);
+      doc.text('// NOTE', MARGIN, py);
+      py += 5;
+      
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...ink);
+      const noteLines = doc.splitTextToSize(p.notes, CONTENT_W);
+      doc.text(noteLines, MARGIN, py);
+    } else {
+      // Notes
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(...bronze);
+      doc.text('// NOTE', MARGIN, py);
+      py += 5;
+      
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...ink);
+      const noteLines = doc.splitTextToSize(p.notes, CONTENT_W);
+      doc.text(noteLines, MARGIN, py);
+    }
+    
+    // If prompt was too long, add a second page
+    if (promptLines.length > maxLinesInBox) {
+      doc.addPage();
+      doc.setFillColor(...bg);
+      doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
+      addPageHeader(doc, `PROMPT ${p.num} · CONTINUED`, p.num, PAGE_W, MARGIN, ink, bronze, accent);
+      
+      const remainingLines = promptLines.slice(maxLinesInBox);
+      const contHeight = Math.min(remainingLines.length * 3.4 + 10, PAGE_H - 60);
+      
+      doc.setFillColor(...ink);
+      doc.rect(MARGIN, 42, CONTENT_W, contHeight, 'F');
+      
+      doc.setFont('courier', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(...cream);
+      doc.text(remainingLines, MARGIN + 6, 48);
+      
+      addPageFooter(doc, doc.internal.getNumberOfPages(), PAGE_W, PAGE_H, MARGIN, bronze, state.brandName);
+    }
+    
+    addPageFooter(doc, doc.internal.getNumberOfPages(), PAGE_W, PAGE_H, MARGIN, bronze, state.brandName);
+  });
+  
+  // ============ FINAL PAGE — TOOLS + WORKFLOW ============
+  doc.addPage();
+  doc.setFillColor(...ink);
+  doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
+  
+  doc.setFillColor(...accent);
+  doc.rect(0, 0, PAGE_W, 3, 'F');
+  
+  doc.setTextColor(...bronze);
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(8);
+  doc.text('// WORKFLOW', MARGIN, 18);
+  doc.text('FINAL', PAGE_W - MARGIN, 18, { align: 'right' });
+  
+  doc.setTextColor(...cream);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(36);
+  doc.text('The workflow.', MARGIN, 50);
+  
+  doc.setDrawColor(...accent);
+  doc.setLineWidth(1.5);
+  doc.line(MARGIN, 55, MARGIN + 40, 55);
+  
+  const workflow = [
+    ['01', 'Copy the prompt', 'Use the COPY button on each prompt card.'],
+    ['02', 'Open an AI image tool', 'Gemini · ChatGPT · Midjourney · Leonardo · Ideogram.'],
+    ['03', 'Generate 10-20 variations', 'AI is stochastic — every generation differs.'],
+    ['04', 'Pick the closest 2-3', 'Not perfect — just closest to your vision.'],
+    ['05', 'Refine in Figma or Canva', 'This is where the real brand lock happens.'],
+    ['06', 'Export final assets', 'PNG, SVG, and print-ready PDF for delivery.'],
+  ];
+  
+  let wy = 78;
+  workflow.forEach(([num, title, desc]) => {
+    doc.setFont('courier', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(...accent);
+    doc.text(num, MARGIN, wy);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.setTextColor(...cream);
+    doc.text(title, MARGIN + 12, wy);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(184, 184, 184);
+    doc.text(desc, MARGIN + 12, wy + 5);
+    
+    wy += 15;
+  });
+  
+  // Tools section
+  wy += 6;
+  doc.setDrawColor(...cream);
+  doc.setLineWidth(0.3);
+  doc.line(MARGIN, wy, PAGE_W - MARGIN, wy);
+  wy += 10;
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(...cream);
+  doc.text('AI Tools', MARGIN, wy);
+  wy += 8;
+  
+  const tools = [
+    ['Gemini', 'gemini.google.com/app', 'FREE · Google'],
+    ['ChatGPT', 'chat.openai.com', 'DALL-E · OpenAI'],
+    ['Midjourney', 'midjourney.com/app', 'PREMIUM · best'],
+    ['Leonardo AI', 'leonardo.ai', 'free credits'],
+    ['Ideogram', 'ideogram.ai', 'best for text'],
+    ['Figma', 'figma.com', 'refine · free'],
+  ];
+  
+  tools.forEach(([name, url, meta]) => {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(...cream);
+    doc.text(name, MARGIN, wy);
+    
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...accent);
+    doc.text(url, MARGIN + 35, wy);
+    
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...bronze);
+    doc.text(meta.toUpperCase(), PAGE_W - MARGIN, wy, { align: 'right' });
+    
+    wy += 7;
+  });
+  
+  // Footer message
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(10);
+  doc.setTextColor(...bronze);
+  doc.text('AI gives you 80%. The last 20% is what makes you a designer.', MARGIN, 275);
+  
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...bronze);
+  doc.text(`${state.brandName.toUpperCase()} · BRAND GUIDE`, MARGIN, 288);
+  doc.text('END OF DOCUMENT', PAGE_W - MARGIN, 288, { align: 'right' });
+  
+  // Save
+  doc.save(`${slugName()}-brand-identity.pdf`);
+}
+
+// PDF helpers
+function addPageHeader(doc, title, num, PAGE_W, MARGIN, ink, bronze, accent) {
+  doc.setDrawColor(...ink);
+  doc.setLineWidth(0.3);
+  doc.line(MARGIN, 28, PAGE_W - MARGIN, 28);
+  
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...bronze);
+  doc.text(title, MARGIN, 22);
+  doc.text(`[${num}]`, PAGE_W - MARGIN, 22, { align: 'right' });
+  
+  doc.setFillColor(...accent);
+  doc.rect(MARGIN, 28.5, 6, 2, 'F');
+}
+
+function addPageFooter(doc, pageNum, PAGE_W, PAGE_H, MARGIN, bronze, brandName) {
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...bronze);
+  doc.text(brandName.toUpperCase() + ' · BRAND GUIDE', MARGIN, PAGE_H - 10);
+  doc.text(String(pageNum).padStart(2, '0'), PAGE_W - MARGIN, PAGE_H - 10, { align: 'right' });
+}
+
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  return [
+    parseInt(hex.slice(0, 2), 16),
+    parseInt(hex.slice(2, 4), 16),
+    parseInt(hex.slice(4, 6), 16),
+  ];
+}
+
+function slugName() {
+  return (state.brandName || 'brand').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'brand';
+}
+
+function downloadFile(content, filename, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function restart() {
+  // Reset state
+  state.currentStep = 0;
+  state.brandName = '';
+  state.tagline = '';
+  state.industry = '';
+  state.audience = '';
+  state.personality = [];
+  state.style = '';
+  state.symbol = '';
+  state.customSymbol = '';
+  state.typography = '';
+  state.products = [];
+  state.colors = { primary: '#0A0A0A', accent: '#D4FF3D', background: '#F2EDE4', presetName: 'custom' };
+  
+  // Reset wheel state
+  wheelState.hue = 140;
+  wheelState.lightness = 50;
+  wheelState.harmony = 'analogous';
+  wheelState.customOverride = false;
+  
+  // Reset UI
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.product-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.harmony-chip').forEach(c => c.classList.remove('active'));
+  document.querySelector('.harmony-chip[data-harmony="analogous"]').classList.add('active');
+  document.getElementById('customToggleBtn').classList.remove('open');
+  document.getElementById('customPanel').classList.remove('open');
+  document.getElementById('lightnessSlider').value = 50;
+  document.getElementById('lightnessVal').textContent = '50%';
+  document.getElementById('brandName').value = '';
+  document.getElementById('tagline').value = '';
+  document.getElementById('industry').value = '';
+  document.getElementById('customSymbol').value = '';
+  
+  updateFromWheel();
+  
+  document.getElementById('formSection').style.display = 'block';
+  document.getElementById('progressWrap').style.display = 'block';
+  document.getElementById('resultsSection').classList.remove('active');
+  
+  showStep(0);
+}
+
+// ============================================================
+// START
+// ============================================================
+init();
+</script>
+
+</body>
+</html>
