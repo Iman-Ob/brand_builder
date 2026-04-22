@@ -2,7 +2,7 @@
 
 أداة تفاعلية لبناء هوية بصرية كاملة باستخدام الذكاء الاصطناعي.
 
-🔗 **Live Demo:** https://[username].github.io/brand-builder/
+🔗 **Live Demo:** https://iman-ob.github.io/brand-builder/
 
 ## Features
 - عجلة ألوان تفاعلية مع 6 أنظمة انسجام
